@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/participante")
@@ -107,6 +108,22 @@ public class ParticipanteController {
             }
         } catch (Exception e) {
             json.put("message", "Error al actualizar el participante: " + e.getMessage());
+        }
+        return json;
+    }
+
+    //Agrupar por ciudad
+    @GetMapping("/ciudad")
+    public Map<String, Object> getParticipantesByCiudad() {
+        Map<String, Object> json = new HashMap<>();
+        try {
+            List<Participante> participantes = service.showAll();
+            Map<String, List<Participante>> groupedByCiudad = participantes.stream()
+                    .collect(Collectors.groupingBy(Participante::getCiudad));
+            json.put("message", "Lista de participantes agrupados por ciudad");
+            json.put("participantes", groupedByCiudad);
+        } catch (Exception e) {
+            json.put("message", "Error al obtener la lista de participantes agrupados por ciudad: " + e.getMessage());
         }
         return json;
     }
